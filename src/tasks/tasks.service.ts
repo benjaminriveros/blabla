@@ -2,21 +2,20 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { Prisma, Tasks } from "@prisma/client";
 import { UtilsService } from "../utils/utils.service.js";
+import { TaskUpdateDto } from "./task.dto.js";
 
 @Injectable()
 export class TasksService {
     constructor(private prisma: PrismaService, private utilsService: UtilsService) {}
 
-    async getAllTasks(page: string, limit: string): Promise<Tasks[]> {
-        const pageNumber = parseInt(page);
-        const limitNumber = parseInt(limit);
+    async getAllTasks(page: number, limit: number): Promise<Tasks[]> {
     
-        if (isNaN(pageNumber) || isNaN(limitNumber)) {
+        if (isNaN(page) || isNaN(limit)) {
           throw new Error('Los parámetros page y limit deben ser números válidos');
         }
         return this.prisma.tasks.findMany({
-          skip: (pageNumber - 1) * limitNumber,
-          take: limitNumber,
+          skip: (page - 1) * limit,
+          take: limit,
         });
       }
 
@@ -51,7 +50,7 @@ export class TasksService {
         });
     }
 
-    async updateTask(data: Tasks, id: number): Promise<Tasks> {
+    async updateTask(data:TaskUpdateDto): Promise<Tasks> {
         return this.prisma.tasks.update({
             where: {
                 id: id

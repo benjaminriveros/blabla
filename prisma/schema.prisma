@@ -13,22 +13,50 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
+model User {
+  id            Int         @id @default(autoincrement())
+  name          String
+  surName       String?
+  birthDate     DateTime
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime                    // INSERTAR FECHA DE ACTUALIZACIÓN "MANUAL"
+  status        UserStatus  @default(ACTIVE)
+  task          UserTask[]
+}
+
+model UserTask {
+  id            Int       @id @default(autoincrement())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime 
+  taskId        Int
+  userId        Int
+  task          Tasks     @relation(fields: [taskId], references: [id])
+  user          User      @relation(fields: [userId], references: [id])
+}
 model Tasks {
-  id              Int       @id @default(autoincrement())
-  title           String
-  day             String
-  dayFinish       String
-  hour            String
-  description     String
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  isCompleted     Boolean   @default(false)
-  categoryId      Int? // Clave forenea de la relcion con categoria
-  cetegory        Category? @relation(fields: [categoryId], references: [id]) //Relacion con category
+  id            Int       @id @default(autoincrement())
+  title         String
+  day           String
+  isCompleted   Boolean   @default(false)
+  dayFinish     String
+  hour          String
+  description   String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  task          UserTask[]
+  categoryId    Int?      // Clave forenea de la relcion con categoria
+  cetegory      Category? @relation(fields: [categoryId], references: [id]) //Relacion con category
 }
 
 model Category {
   id              Int       @id @default(autoincrement())
   name            String
   tasks           Tasks[]
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
 }

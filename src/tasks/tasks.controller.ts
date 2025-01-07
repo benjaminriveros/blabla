@@ -1,21 +1,28 @@
 import { Query, NotFoundException, Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
 import { TasksService } from "./tasks.service";
 import { Tasks } from "@prisma/client";
+import { TaskCreateDto, TaskQueryFindAllDto, TaskUpdateDto } from "./task.dto";
 
+/*GET tasks
+GET tasks/:id
+POST tasks
+PUT  tasks/:id
+DELETE tasks/:id
+
+POST task/invited-user*/
 
 @Controller('tasks')
 export class TasksController {
     constructor(private readonly taskService: TasksService){}
 
-    @Put(':id')
-    async updateTask(@Body() data: Tasks, @Param('id') id: String){
-        return this.taskService.updateTask(data, Number(id))
+    @Put('')
+    async updateTask(@Body() data: TaskUpdateDto){
+        return this.taskService.updateTask(data)
     }
 
     @Get('all')
     async getAllTasks(
-      @Query('page') page: string,
-      @Query('limit') limit: string,
+      @Query() {page, limit}: TaskQueryFindAllDto,
     ) {
       return this.taskService.getAllTasks(page, limit);
     }
@@ -36,11 +43,8 @@ export class TasksController {
 
     @Delete(':id')
     async deleteTask(@Param('id') id: String){
-        try {
             return await this.taskService.deleteTask(Number(id))
-        } catch (error) {
-            throw new NotFoundException(error)
-        }
+
     }
 
 }
