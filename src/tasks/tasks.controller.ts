@@ -14,11 +14,16 @@ POST task/invited-user*/
 @Controller('tasks')
 export class TasksController {
     constructor(private readonly taskService: TasksService){}
+    
+    @Post()
+    async createTask(@Body() taskCreateDto: TaskCreateDto){
+        return this.taskService.createTask(taskCreateDto)
+    }
 
-    @Put('')
+    /*    @Put('')
     async updateTask(@Body() data: TaskUpdateDto){
         return this.taskService.updateTask(data)
-    }
+    }*/
 
     @Get('all')
     async getAllTasks(
@@ -36,10 +41,6 @@ export class TasksController {
       return this.taskService.getTask(id, title, day);
     }
 
-    @Post()
-    async createTask(@Body() data: Tasks){
-        return this.taskService.createTask(data)
-    }
 
     @Delete(':id')
     async deleteTask(@Param('id') id: String){

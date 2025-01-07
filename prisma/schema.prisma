@@ -37,11 +37,11 @@ model UserTask {
 model Tasks {
   id            Int       @id @default(autoincrement())
   title         String
-  day           String
-  isCompleted   Boolean   @default(false)
-  dayFinish     String
-  hour          String
   description   String
+  day           String
+  hour          String
+  dayFinish     String?
+  isCompleted   Boolean   @default(false)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   task          UserTask[]

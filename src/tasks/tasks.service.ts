@@ -2,12 +2,19 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { Prisma, Tasks } from "@prisma/client";
 import { UtilsService } from "../utils/utils.service.js";
-import { TaskUpdateDto } from "./task.dto.js";
+import { TaskUpdateDto, TaskCreateDto } from "./task.dto.js";
+import { TaskFacade } from "./task.facade.js";
+
 
 @Injectable()
 export class TasksService {
-    constructor(private prisma: PrismaService, private utilsService: UtilsService) {}
-
+    constructor(private prisma: PrismaService, private utilsService: UtilsService, private taskFacade: TaskFacade) {}
+    
+    async createTask(data: TaskCreateDto): Promise<any> {
+        
+        return this.taskFacade.create(data);
+    }
+    
     async getAllTasks(page: number, limit: number): Promise<Tasks[]> {
     
         if (isNaN(page) || isNaN(limit)) {
@@ -43,20 +50,14 @@ export class TasksService {
           where
         });
     }
-    
-    async createTask(data: Tasks): Promise<Tasks> {
-        return this.prisma.tasks.create({
-            data: data
-        });
-    }
 
-    async updateTask(data:TaskUpdateDto): Promise<Tasks> {
+/*    async updateTask(data:TaskUpdateDto): Promise<Tasks> {
         return this.prisma.tasks.update({
             where: {
                 id: id
             }, data: data
         });
-    }
+    }*/
 
     async deleteTask(id: number): Promise<Tasks> {
         return this.prisma.tasks.delete({
