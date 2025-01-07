@@ -1,0 +1,34 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Tasks {
+  id              Int       @id @default(autoincrement())
+  title           String
+  day             String
+  dayFinish       String
+  hour            String
+  description     String
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  isCompleted     Boolean   @default(false)
+  categoryId      Int? // Clave forenea de la relcion con categoria
+  cetegory        Category? @relation(fields: [categoryId], references: [id]) //Relacion con category
+}
+
+model Category {
+  id              Int       @id @default(autoincrement())
+  name            String
+  tasks           Tasks[]
+}
