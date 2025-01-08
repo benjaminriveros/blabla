@@ -1,6 +1,4 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "src/prisma/prisma.service";
-import { Prisma, Tasks } from "@prisma/client";
 import { UtilsService } from "../utils/utils.service.js";
 import { TaskQueryFindAllDto, CreateTaskDto, ResponseTaskDto, TaskFindOneDto, TaskUpdateDto } from "./task.dto.js";
 import { TaskFacade } from "./task.facade.js";
@@ -8,7 +6,7 @@ import { TaskFacade } from "./task.facade.js";
 
 @Injectable()
 export class TasksService {
-    constructor(private prisma: PrismaService, private utilsService: UtilsService, private taskFacade: TaskFacade) {}
+    constructor(private utilsService: UtilsService, private taskFacade: TaskFacade) {}
     
     async createTask(data: CreateTaskDto): Promise<CreateTaskDto> {
         return this.taskFacade.createTask(data);

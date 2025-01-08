@@ -1,6 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger"
-import { IsString, IsOptional, IsBoolean, IsDateString, IsInt, IsNumber, IsNotEmpty, ValidateIf, IsDefined } from "class-validator"
-import { Transform } from "class-transformer"
+import { IsString, IsOptional, IsBoolean, IsInt, IsNumber, IsNotEmpty, ValidateIf, IsDefined } from "class-validator"
 
 // DTO Base con los campos comunes
 export class TaskBaseDto {

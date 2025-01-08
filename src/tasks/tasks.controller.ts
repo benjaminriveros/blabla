@@ -1,6 +1,5 @@
-import { Query, NotFoundException, Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
+import { Query, Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
 import { TasksService } from "./tasks.service";
-import { Tasks } from "@prisma/client";
 import { CreateTaskDto, TaskFindOneDto, TaskQueryFindAllDto, ResponseTaskDto, TaskUpdateDto } from "./task.dto";
 
 /*GET tasks

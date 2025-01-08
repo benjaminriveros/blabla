@@ -5,11 +5,7 @@ import { NotFoundException, BadRequestException } from "@nestjs/common";
 
 @Injectable()
 export class TaskFacade {
-    constructor(private readonly taskDal: TaskDal){
-        //se ocupa bll?
-        //necesita dal de user ?
-        //necesita dal de categorias? 
-    }
+    constructor(private readonly taskDal: TaskDal){}
 
     async createTask(createTaskDto: CreateTaskDto){
         return this.taskDal.createTask(createTaskDto);
