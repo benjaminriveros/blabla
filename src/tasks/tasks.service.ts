@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { Prisma, Tasks } from "@prisma/client";
 import { UtilsService } from "../utils/utils.service.js";
-import { TaskQueryFindAllDto, CreateTaskDto, FindAllTaskDto } from "./task.dto.js";
+import { TaskQueryFindAllDto, CreateTaskDto, ResponseTaskDto, TaskFindOneDto } from "./task.dto.js";
 import { TaskFacade } from "./task.facade.js";
 
 
@@ -14,33 +14,12 @@ export class TasksService {
         return this.taskFacade.createTask(data);
     }
     
-    async getAllTasks(taskQueryFindAllDto: TaskQueryFindAllDto): Promise<FindAllTaskDto[]> {
+    async getAllTasks(taskQueryFindAllDto: TaskQueryFindAllDto): Promise<ResponseTaskDto[]> {
         return this.taskFacade.getAllTasks(taskQueryFindAllDto);
       }
 
-    async getTask(id?: string, title?: string, day?: string): Promise<Tasks> {
-
-        const where: Prisma.TasksWhereInput = {};
-
-        if(id){
-            where.id = parseInt(id)
-        }
-
-        if (title) {
-            where.title = {
-              contains: this.utilsService.removeAccents(title),  // Búsqueda con expresión regular
-              mode: 'insensitive',
-            };
-          }
-
-        if(day) {
-            where.day = day
-        }
-        console.log(where)
-
-        return this.prisma.tasks.findFirst({
-          where
-        });
+    async getTask(taskQueryFindOneDto: TaskFindOneDto): Promise<ResponseTaskDto> {
+        return this.taskFacade.getTask(taskQueryFindOneDto);
     }
 
 /*    async updateTask(data:TaskUpdateDto): Promise<Tasks> {

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateTaskDto, TaskQueryFindAllDto, FindAllTaskDto } from './task.dto';
+import { CreateTaskDto, TaskQueryFindAllDto, TaskFindOneDto, ResponseTaskDto } from './task.dto';
 import { PrismaService } from "src/prisma/prisma.service";
 
 @Injectable()
@@ -31,6 +31,17 @@ export class TaskDal {
             skip: (page - 1) * limit,
             take: limit,
         });
-        return tasks.map(task => new FindAllTaskDto(task));
+        return tasks.map(task => new ResponseTaskDto(task));
+    }
+
+    async getTask(taskFindOneDto: TaskFindOneDto) {
+        const where: any = {};
+        if (taskFindOneDto.id) where.id = taskFindOneDto.id;
+        if (taskFindOneDto.title) where.title = taskFindOneDto.title;
+        if (taskFindOneDto.day) where.day = taskFindOneDto.day;
+        
+        return this.prisma.tasks.findUnique({
+            where
+        });
     }
 }
