@@ -1,6 +1,6 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
-import { CreateCategoryDto, ResponseCategoryDto } from "./category.dto";
+import { CreateCategoryDto, FindAllQueryDto, ResponseAllCategoryDto, ResponseCategoryDto } from "./category.dto";
 import { ResponseTaskDto } from "src/tasks/task.dto";
 
 @Injectable()
@@ -31,6 +31,7 @@ export class CategoryDal {
                 tasks: true
             }
         });
+        if (!found) throw new HttpException('Category not found', HttpStatus.NOT_FOUND);
         const responseCategoryDto = new ResponseCategoryDto();
         responseCategoryDto.id = found.id;
         responseCategoryDto.name = found.name;
@@ -49,7 +50,8 @@ export class CategoryDal {
                 tasks: true
             }
         })
-        if(!found) return null;
+        //Si no se encuentra la categoría, retornar error not found
+        if (!found) throw new HttpException('Category not found', HttpStatus.NOT_FOUND);
         const responseCategoryDto = new ResponseCategoryDto();
         responseCategoryDto.id = found.id;
         responseCategoryDto.name = found.name;
@@ -57,5 +59,25 @@ export class CategoryDal {
         responseCategoryDto.tasks = found.tasks.map(task => new ResponseTaskDto(task));
 
         return responseCategoryDto;
+    }
+    async findAll(findAllQueryDto: FindAllQueryDto):Promise<ResponseAllCategoryDto[]>{
+        const page = findAllQueryDto.page;
+        const limit = findAllQueryDto.limit;
+        const found = await this.prisma.category.findMany({
+            skip: (page - 1) * limit,
+            take: limit,
+            include: {
+                tasks: true
+            }
+        })
+        return found.map(found => new ResponseAllCategoryDto(found));
+    }
+
+    async updateCategory(): Promise<any>{
+        return
+    }
+
+    async deleteCategory(): Promise<any>{
+        return
     }
 }
