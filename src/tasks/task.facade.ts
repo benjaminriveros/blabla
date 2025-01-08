@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { TaskDal } from "./task.dal";
-import { CreateTaskDto, TaskQueryFindAllDto, ResponseTaskDto, TaskFindOneDto } from "./task.dto";
+import { CreateTaskDto, TaskQueryFindAllDto, ResponseTaskDto, TaskFindOneDto, TaskUpdateDto } from "./task.dto"
+import { NotFoundException, BadRequestException } from "@nestjs/common";
 
 @Injectable()
 export class TaskFacade {
@@ -15,7 +16,7 @@ export class TaskFacade {
     }
 
     async getAllTasks(taskQueryFindAllDto: TaskQueryFindAllDto): Promise<ResponseTaskDto[]> { 
-        // Debo declarar el tipo de retorno con Promise<CreateTaskDto[]>?
+        // Debo declarar el tipo de retorno con Promise<ResponseTaskDto[]>?
         return this.taskDal.getAllTasks(taskQueryFindAllDto);
     }
 
@@ -23,9 +24,24 @@ export class TaskFacade {
         return this.taskDal.getTask(TaskFindOneDto);
     }
 
-/*    public async update(task: TaskUpdateDto){
-        //existe el refitros
-        //es del pasado
-        //actualizarlo?
-    }*/
+    async updateTask(taskupdateDto: TaskUpdateDto): Promise<any/*ResponseTaskDto*/> {
+        // 1. Obtener la tarea
+        const taskFindOneDto = new TaskFindOneDto();
+        taskFindOneDto.id = taskupdateDto.id;
+        const task = await this.taskDal.getTask(taskFindOneDto);
+
+        // 2. Verificar si la fecha de la tarea es del pasado y si existe la tarea
+        if(!task) throw new NotFoundException('Task not found');
+
+        const [day, month, year] = task.day.split('-');
+        const formattedDay =  `${year}-${month}-${day}`;
+        const taskDate = new Date(formattedDay);
+
+        // 3. Si es del pasado, actualizarla
+        if(taskDate < new Date()){
+            return this.taskDal.updateTask(taskupdateDto);
+        }
+        // 4. Si no es del pasado, lanzar un error
+        throw new BadRequestException('You cannot update a task from the future');
+    }
 }

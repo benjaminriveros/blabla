@@ -1,7 +1,7 @@
 import { Query, NotFoundException, Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
 import { TasksService } from "./tasks.service";
 import { Tasks } from "@prisma/client";
-import { CreateTaskDto, TaskFindOneDto, TaskQueryFindAllDto, ResponseTaskDto } from "./task.dto";
+import { CreateTaskDto, TaskFindOneDto, TaskQueryFindAllDto, ResponseTaskDto, TaskUpdateDto } from "./task.dto";
 
 /*GET tasks
 GET tasks/:id
@@ -41,11 +41,15 @@ export class TasksController {
         taskQueryFindOneDto.id = id;
         return this.taskService.getTask(taskQueryFindOneDto);
     }
-
-    /*    @Put('')
-    async updateTask(@Body() data: TaskUpdateDto){
-        return this.taskService.updateTask(data)
-    }*/
+/*si de una petición HTTP quiero extraer variables de la url con @query y datos con @body y almacenar todo en DTO's, sería algo así?:*/
+    @Put(':id')
+    async updateTask(
+        @Body() taskupdateDto: TaskUpdateDto,
+        @Param('id') id: string
+    ){
+        taskupdateDto.id = parseInt(id)
+        return this.taskService.updateTask(taskupdateDto)
+    }
 
     @Delete(':id')
     async deleteTask(@Param('id') id: String){

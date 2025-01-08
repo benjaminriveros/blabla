@@ -62,13 +62,39 @@ export class TaskBaseDto {
   @IsOptional() // Este campo es opcional, ya que puede ser null
   categoryId?: number;
 }
+export class TaskUpdateDto {
+  @IsOptional()
+  @IsNumber()
+  id?: number;
 
-export class TaskResponseDto {
-    id: string
+  @IsOptional()
+  @IsString()
+  title?: string;
+
+  @IsOptional()
+  @IsNotEmpty()
+  day: string;
+
+  @IsOptional()
+  @IsString()
+  dayFinish?: string;
+
+  @IsOptional()
+  @IsString()
+  hour?: string;
+
+  @IsOptional()
+  @IsString()
+  description?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  isCompleted?: boolean;
+
+  @IsOptional()
+  @IsInt()
+  categoryId?: number;
 }
-
-/*export class TaskUpdateDto extends CreateTaskDto {
-} */
 
 export class TaskParamDeleteDto {
   @ApiProperty({

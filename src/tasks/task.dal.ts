@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateTaskDto, TaskQueryFindAllDto, TaskFindOneDto, ResponseTaskDto } from './task.dto';
+import { CreateTaskDto, TaskQueryFindAllDto, TaskFindOneDto, ResponseTaskDto, TaskUpdateDto } from './task.dto';
 import { PrismaService } from "src/prisma/prisma.service";
 
 @Injectable()
@@ -39,9 +39,29 @@ export class TaskDal {
         if (taskFindOneDto.id) where.id = taskFindOneDto.id;
         if (taskFindOneDto.title) where.title = taskFindOneDto.title;
         if (taskFindOneDto.day) where.day = taskFindOneDto.day;
-        
+
         return this.prisma.tasks.findUnique({
             where
+        });
+    }
+
+    async updateTask(taskUpdateDto: TaskUpdateDto){
+        const { id, title, day, dayFinish, hour, description, isCompleted, categoryId } = taskUpdateDto;
+        const data: any = {}
+        // Solo asignamos los valores que no son undefined o null
+        if (title !== undefined && title !== null) data.title = title;
+        if (day !== undefined && day !== null) data.day = day;
+        if (dayFinish !== undefined && dayFinish !== null) data.dayFinish = dayFinish;
+        if (hour !== undefined && hour !== null) data.hour = hour;
+        if (description !== undefined && description !== null) data.description = description;
+        if (isCompleted !== undefined && isCompleted !== null) data.isCompleted = isCompleted;
+        if (categoryId !== undefined && categoryId !== null) data.categoryId = categoryId;
+
+        return this.prisma.tasks.update({
+            where: {
+                id
+            },
+            data
         });
     }
 }

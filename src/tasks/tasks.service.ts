@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { Prisma, Tasks } from "@prisma/client";
 import { UtilsService } from "../utils/utils.service.js";
-import { TaskQueryFindAllDto, CreateTaskDto, ResponseTaskDto, TaskFindOneDto } from "./task.dto.js";
+import { TaskQueryFindAllDto, CreateTaskDto, ResponseTaskDto, TaskFindOneDto, TaskUpdateDto } from "./task.dto.js";
 import { TaskFacade } from "./task.facade.js";
 
 
@@ -16,19 +16,15 @@ export class TasksService {
     
     async getAllTasks(taskQueryFindAllDto: TaskQueryFindAllDto): Promise<ResponseTaskDto[]> {
         return this.taskFacade.getAllTasks(taskQueryFindAllDto);
-      }
+    }
 
     async getTask(taskQueryFindOneDto: TaskFindOneDto): Promise<ResponseTaskDto> {
         return this.taskFacade.getTask(taskQueryFindOneDto);
     }
 
-/*    async updateTask(data:TaskUpdateDto): Promise<Tasks> {
-        return this.prisma.tasks.update({
-            where: {
-                id: id
-            }, data: data
-        });
-    }*/
+    async updateTask(taskupdateDto:TaskUpdateDto): Promise<any/*ResponseTaskDto*/> {
+        return this.taskFacade.updateTask(taskupdateDto);
+    }
 
     async deleteTask(id: number): Promise<Tasks> {
         return this.prisma.tasks.delete({
