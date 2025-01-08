@@ -22,15 +22,11 @@ export class TasksService {
         return this.taskFacade.getTask(taskQueryFindOneDto);
     }
 
-    async updateTask(taskupdateDto:TaskUpdateDto): Promise<any/*ResponseTaskDto*/> {
+    async updateTask(taskupdateDto:TaskUpdateDto): Promise<ResponseTaskDto> {
         return this.taskFacade.updateTask(taskupdateDto);
     }
 
-    async deleteTask(id: number): Promise<Tasks> {
-        return this.prisma.tasks.delete({
-            where: {
-                id: id
-            }
-        });
+    async deleteTask(id: number): Promise<ResponseTaskDto> {
+        return this.taskFacade.deleteTask(id);
     }
 }

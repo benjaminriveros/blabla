@@ -24,7 +24,7 @@ export class TaskFacade {
         return this.taskDal.getTask(TaskFindOneDto);
     }
 
-    async updateTask(taskupdateDto: TaskUpdateDto): Promise<any/*ResponseTaskDto*/> {
+    async updateTask(taskupdateDto: TaskUpdateDto): Promise<ResponseTaskDto> {
         // 1. Obtener la tarea
         const taskFindOneDto = new TaskFindOneDto();
         taskFindOneDto.id = taskupdateDto.id;
@@ -44,4 +44,14 @@ export class TaskFacade {
         // 4. Si no es del pasado, lanzar un error
         throw new BadRequestException('You cannot update a task from the future');
     }
-}
+    async deleteTask(id: number): Promise<ResponseTaskDto>{
+        // 1. Obtener la tarea
+        const taskFindOneDto = new TaskFindOneDto();
+        taskFindOneDto.id = id;
+        const task = await this.taskDal.getTask(taskFindOneDto);
+
+        // 2. Verifica si exite la tarea. Si existe, eliminarla, si no existe, lanzar un error
+        if(!task) throw new NotFoundException('Task not found');
+        return this.taskDal.deleteTask(id);
+    }
+}   

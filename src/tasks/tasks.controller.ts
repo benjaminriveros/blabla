@@ -41,19 +41,19 @@ export class TasksController {
         taskQueryFindOneDto.id = id;
         return this.taskService.getTask(taskQueryFindOneDto);
     }
-/*si de una petición HTTP quiero extraer variables de la url con @query y datos con @body y almacenar todo en DTO's, sería algo así?:*/
+    
     @Put(':id')
     async updateTask(
-        @Body() taskupdateDto: TaskUpdateDto,
+        @Body() taskUpdateDto: TaskUpdateDto,
         @Param('id') id: string
     ){
-        taskupdateDto.id = parseInt(id)
-        return this.taskService.updateTask(taskupdateDto)
+        taskUpdateDto.id = parseInt(id)
+        return this.taskService.updateTask(taskUpdateDto)
     }
 
     @Delete(':id')
     async deleteTask(@Param('id') id: String){
-            return await this.taskService.deleteTask(Number(id))
+        return await this.taskService.deleteTask(Number(id))
 
     }
 

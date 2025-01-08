@@ -64,4 +64,12 @@ export class TaskDal {
             data
         });
     }
+
+    async deleteTask(id: number) {
+        return this.prisma.tasks.delete({
+            where: {
+                id
+            }
+        });
+    }
 }

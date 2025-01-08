@@ -95,7 +95,6 @@ export class TaskUpdateDto {
   @IsInt()
   categoryId?: number;
 }
-
 export class TaskParamDeleteDto {
   @ApiProperty({
     description: 'Id of task to delete',
