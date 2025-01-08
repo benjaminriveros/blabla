@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { TaskDal } from "./task.dal";
-import { TaskCreateDto } from "./task.dto";
+import { CreateTaskDto, TaskQueryFindAllDto, FindAllTaskDto } from "./task.dto";
 
 @Injectable()
 export class TaskFacade {
@@ -10,9 +10,13 @@ export class TaskFacade {
         //necesita dal de categorias
     }
 
-    async create(taskCreateDto: TaskCreateDto){
-        // Lógica de negocio más compleja
-        return this.taskDal.create(taskCreateDto);
+    async createTask(createTaskDto: CreateTaskDto){
+        return this.taskDal.createTask(createTaskDto);
+    }
+
+    async getAllTasks(taskQueryFindAllDto: TaskQueryFindAllDto): Promise<FindAllTaskDto[]> { 
+        // Debo declarar el tipo de retorno con Promise<CreateTaskDto[]>?
+        return this.taskDal.getAllTasks(taskQueryFindAllDto);
     }
 
 /*    public async update(task: TaskUpdateDto){

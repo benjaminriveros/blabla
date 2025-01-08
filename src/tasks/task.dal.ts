@@ -1,14 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { TaskCreateDto } from './task.dto';
+import { CreateTaskDto, TaskQueryFindAllDto, FindAllTaskDto } from './task.dto';
 import { PrismaService } from "src/prisma/prisma.service";
 
 @Injectable()
 export class TaskDal {
     constructor(private prisma: PrismaService) {}
 
-    async create(createTaskDto: TaskCreateDto) {
-    // Lógica para insertar una tarea en la base de datos
-        //this.prisma.tasks.create()
+    async createTask(createTaskDto: CreateTaskDto) {
         // Desestructuración de los campos del DTO
         const { title, day, dayFinish, hour, description, isCompleted, categoryId } = createTaskDto;
 
@@ -22,6 +20,17 @@ export class TaskDal {
                 isCompleted: isCompleted ?? false, // Si no se proporciona, se establece como `false` (valor por defecto)
                 categoryId: categoryId ?? null,    // Si no se proporciona, se establece como `null` (campo opcional)    
             }
-        }) // Simulación de una tarea creada
+        }) 
+    }
+
+    // Para transformar los datos de la bd a DTO
+    // o es mejor usar librería class-transformer?
+    async getAllTasks(taskQueryFindAllDto: TaskQueryFindAllDto) {
+        const { page, limit } = taskQueryFindAllDto;
+        const tasks = await this.prisma.tasks.findMany({
+            skip: (page - 1) * limit,
+            take: limit,
+        });
+        return tasks.map(task => new FindAllTaskDto(task));
     }
 }

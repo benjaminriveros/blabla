@@ -1,7 +1,7 @@
 import { Query, NotFoundException, Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
 import { TasksService } from "./tasks.service";
 import { Tasks } from "@prisma/client";
-import { TaskCreateDto, TaskQueryFindAllDto, TaskUpdateDto } from "./task.dto";
+import { CreateTaskDto, TaskQueryFindAllDto } from "./task.dto";
 
 /*GET tasks
 GET tasks/:id
@@ -9,15 +9,29 @@ POST tasks
 PUT  tasks/:id
 DELETE tasks/:id
 
-POST task/invited-user*/
+POST task/invited-user */
 
 @Controller('tasks')
 export class TasksController {
-    constructor(private readonly taskService: TasksService){}
+    constructor(private readonly taskService: TasksService) {}
     
     @Post()
-    async createTask(@Body() taskCreateDto: TaskCreateDto){
-        return this.taskService.createTask(taskCreateDto)
+    async createTask(@Body() createTaskDto: CreateTaskDto){
+        return this.taskService.createTask(createTaskDto)
+    }
+
+    @Get('all')
+    async getAllTasks(@Query() queryParams: { page: string; limit: string }) {
+      // Convertir los datos obtenidos de la URL a números
+      const page = Number(queryParams.page)
+      const limit = Number(queryParams.limit)
+    
+      // Construir el DTO
+      const taskQueryFindAllDto = new TaskQueryFindAllDto();
+      taskQueryFindAllDto.page = page;
+      taskQueryFindAllDto.limit = limit;
+    
+      return this.taskService.getAllTasks(taskQueryFindAllDto);
     }
 
     /*    @Put('')
@@ -25,12 +39,6 @@ export class TasksController {
         return this.taskService.updateTask(data)
     }*/
 
-    @Get('all')
-    async getAllTasks(
-      @Query() {page, limit}: TaskQueryFindAllDto,
-    ) {
-      return this.taskService.getAllTasks(page, limit);
-    }
 
     @Get()
     async getTask(

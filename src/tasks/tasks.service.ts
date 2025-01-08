@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { Prisma, Tasks } from "@prisma/client";
 import { UtilsService } from "../utils/utils.service.js";
-import { TaskUpdateDto, TaskCreateDto } from "./task.dto.js";
+import { TaskQueryFindAllDto, CreateTaskDto, FindAllTaskDto } from "./task.dto.js";
 import { TaskFacade } from "./task.facade.js";
 
 
@@ -10,20 +10,12 @@ import { TaskFacade } from "./task.facade.js";
 export class TasksService {
     constructor(private prisma: PrismaService, private utilsService: UtilsService, private taskFacade: TaskFacade) {}
     
-    async createTask(data: TaskCreateDto): Promise<any> {
-        
-        return this.taskFacade.create(data);
+    async createTask(data: CreateTaskDto): Promise<CreateTaskDto> {
+        return this.taskFacade.createTask(data);
     }
     
-    async getAllTasks(page: number, limit: number): Promise<Tasks[]> {
-    
-        if (isNaN(page) || isNaN(limit)) {
-          throw new Error('Los parámetros page y limit deben ser números válidos');
-        }
-        return this.prisma.tasks.findMany({
-          skip: (page - 1) * limit,
-          take: limit,
-        });
+    async getAllTasks(taskQueryFindAllDto: TaskQueryFindAllDto): Promise<FindAllTaskDto[]> {
+        return this.taskFacade.getAllTasks(taskQueryFindAllDto);
       }
 
     async getTask(id?: string, title?: string, day?: string): Promise<Tasks> {
