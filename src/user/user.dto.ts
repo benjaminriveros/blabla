@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsString, IsOptional, IsEnum, IsDate, IsInt, Min, Max } from "class-validator";
+import { IsNotEmpty, IsString, IsOptional, IsEnum, IsDate, IsInt, Min, Max, IsArray, ArrayUnique } from "class-validator";
 import { UserStatus } from "../enum/UserStatus.js"
 
 export class CreateUserDto {
@@ -32,7 +32,7 @@ export class CreateUserDto {
     surName?: string;
   
     @ApiProperty({
-      description: 'The birth date of the user (ISO 8601 format)',
+      description: 'The birth date of the user',
       example: '15-05-1990',
       required: true
     })
@@ -161,4 +161,74 @@ export class QueryFindByName {
     @IsString()
     @IsNotEmpty()
     limit: string = "5"; // Valor por defecto si no se pasa en la URL
+}
+export class QueryUpdateUserDto {
+    @ApiProperty({
+        description: 'Name of User',
+        example: 'Juan',
+        type: String,
+    })
+    @IsOptional()
+    @IsString()
+    name?: string;
+
+    @ApiProperty({
+        description: 'Surname of user',
+        example: 'Pérez',
+        type: String,
+        required: false,
+    })
+    @IsOptional()
+    @IsString()
+    surName?: string;
+
+    @ApiProperty({
+        description: 'Birthday of user',
+        example: '19-05-2000',
+        type: String,
+    })
+    @IsOptional()
+    birthDate?: any;
+
+    @ApiProperty({
+        description: 'Status of user',
+        enum: UserStatus,
+        example: UserStatus.ACTIVE,
+    })
+    @IsEnum(UserStatus)
+    @IsOptional()
+    status?: UserStatus;
+
+    @ApiProperty({
+        description: 'ID\'s of TaskUser',
+        type: [Number],
+        example: [1, 2, 3],
+    })
+    @IsArray()
+    @ArrayUnique()
+    @IsInt({ each: true })
+    @IsOptional()
+    tasks?: number[];
+}
+export class UserTaskDto {
+    id: number;             // ID de la relación entre el usuario y la tarea
+    createdAt: Date;        // Fecha de creación de la relación
+    updatedAt: Date;        // Fecha de la última actualización de la relación
+    taskId: number;         // ID de la tarea asociada
+    userId: string;         // ID del usuario asociado
+    task: {                 // Información de la tarea asociada
+      id: number;           // ID de la tarea
+      title: string;        // Título de la tarea
+      description: string;  // Descripción de la tarea
+      day: string;          // Día de la tarea
+      hour: string;         // Hora de la tarea
+      dayFinish: string | null; // Día de finalización de la tarea
+      isCompleted: boolean; // Estado de completitud de la tarea
+    };
+    user: {                 // Información del usuario asociado
+      id: string;           // ID del usuario
+      name: string;         // Nombre del usuario
+      surName: string | null; // Apellido del usuario
+    };
   }
+  

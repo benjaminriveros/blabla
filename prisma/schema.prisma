@@ -22,7 +22,7 @@ model User {
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    
   status        UserStatus  @default(ACTIVE)
-  task          UserTask[]
+  userTask      UserTask[]
 }
 
 model UserTask {
@@ -44,7 +44,7 @@ model Tasks {
   isCompleted   Boolean   @default(false)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  task          UserTask[]
+  userTask      UserTask[]
   categoryId    Int?      // Clave forenea de la relcion con categoria
   cetegory      Category? @relation(fields: [categoryId], references: [id]) //Relacion con category
 }

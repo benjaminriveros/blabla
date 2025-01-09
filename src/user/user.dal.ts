@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
-import { CreateUserDto, QueryFindByName, ResponseUserDto, ResponseUserTaskDto } from "./user.dto";
+import { CreateUserDto, QueryFindByName, QueryUpdateUserDto, ResponseUserDto, ResponseUserTaskDto } from "./user.dto";
 import { UserStatus } from "src/enum/UserStatus";
 import { map } from "rxjs";
 
@@ -48,7 +48,7 @@ export class UserDal{
             include: {
               task: {
                 include: {
-                  task: true,
+                  task: true
                 },
               },
             },
@@ -70,9 +70,29 @@ export class UserDal{
         skip: (Number(queryFindByName.page) - 1) * Number(queryFindByName.limit),
         take: Number(queryFindByName.limit),
         })
-        if(exists.length == 0) return null
+        if(exists.length === 0) return null
         const listUsers: ResponseUserDto[] = exists.map(user => this.mapToResponseUserDto(user))
-        console.log(listUsers)
         return listUsers
+    }
+
+    async updateUser(id:string, queryUpdateUserDto: QueryUpdateUserDto): Promise<any>{ 
+        const data: any = []
+        if(queryUpdateUserDto.name) data.name = queryUpdateUserDto.name
+        if(queryUpdateUserDto.surName) data.surName = queryUpdateUserDto.surName
+        if(queryUpdateUserDto.birthDate) data.surName = queryUpdateUserDto.birthDate
+        if(queryUpdateUserDto.status) data.surName = queryUpdateUserDto.status
+        if(queryUpdateUserDto.tasks.length) {
+            data.tasks = {
+                set: queryUpdateUserDto.tasks.map(task => ({userId: task}))
+            }
+        }
+        return console.log(data)
+        const updated = await this.prisma.user.update({
+            where: {
+                id
+            },
+            data
+        })
+        return this.mapToResponseUserDto(updated)
     }
 }
