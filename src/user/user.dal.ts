@@ -30,9 +30,7 @@ export class UserDal{
               })
             : [] // arreglo vacío si no hay tareas
         } as ResponseUserDto;
-      }
-
-
+    }
 
     async createUser(createUserDto: CreateUserDto): Promise <ResponseUserDto> {
         const created = await this.prisma.user.create({

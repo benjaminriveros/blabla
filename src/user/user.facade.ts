@@ -15,5 +15,12 @@ export class UserFacade {
         return this.userDal.createUser(createUserDto) 
     }
 
+    async finduserById(id: string): Promise<ResponseUserDto> {
+        if(!this.utilsService.validateId(id)) throw new HttpException('Invalid Id (RUN)', HttpStatus.BAD_REQUEST)
+        const exists = await this.userDal.findUserById(id)
+        if(!exists) throw new HttpException('Id (RUN) does not exist', HttpStatus.NOT_FOUND)
+        return exists
+    }
+
 
 }
