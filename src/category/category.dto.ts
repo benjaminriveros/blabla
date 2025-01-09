@@ -1,3 +1,4 @@
+import { ApiProperty } from "@nestjs/swagger";
 import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, ValidateIf, IsDefined } from "class-validator";
 import { ResponseTaskDto } from "src/tasks/task.dto";
 
@@ -65,14 +66,25 @@ export class FindAllQueryDto {
 
 export class UpdateCategoryDto {
     @IsNumber()
-    @IsOptional()
+    @IsOptional() // El id es opcional ya que viene en el URL
     id: number;
 
+    @ApiProperty({
+        description: 'The new name of the category',
+        example: 'Updated Category Name',
+        required: false, // El nombre puede ser opcional dependiendo de cómo quieras manejarlo
+    })
     @IsString()
-    @IsOptional()
+    @IsOptional() // El nombre es opcional si no lo actualizas
     name: string;
 
+    @ApiProperty({
+        description: 'List of task IDs to be associated with the category, this replace the current list',
+        type: [Object], // Indica que es un arreglo de objetos
+        example: [{ id: 3 }, { id: 6 }],
+        required: false, // Este campo es opcional
+    })
     @IsArray()
-    @IsOptional()
-    tasks: ResponseTaskDto[];
+    @IsOptional() // Tareas opcionales si no las proporcionas
+    tasks?: { id: number }[]; // Este es el tipo que esperamos (arreglo de objetos con un campo "id")
 }
