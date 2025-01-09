@@ -19,8 +19,8 @@ export class CategoryService {
     async updateCategory(updateCategoryDto: UpdateCategoryDto): Promise<ResponseCategoryDto> {
         return this.categoryFacade.updateCategory(updateCategoryDto);
     }
-    async deleteCategory(): Promise<any> {
-        return
+    async deleteCategory(id: number): Promise<ResponseCategoryDto> {
+        return this.categoryFacade.deleteCategory(id)
     }
 
 }

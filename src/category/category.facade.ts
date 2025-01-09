@@ -30,7 +30,9 @@ constructor(private readonly categoryDal: CategoryDal){}
         }
         // 2. Si se proporciona el nombre, buscar por nombre
         if (searchNameOrIdCategoryDto.name) {
-            return this.categoryDal.findOneByName(searchNameOrIdCategoryDto.name);
+            const exists = await this.categoryDal.findOneByName(searchNameOrIdCategoryDto.name);
+            if(!exists) throw new HttpException('Category not found', HttpStatus.NOT_FOUND)
+            return exists
         }
     }
 
@@ -43,12 +45,15 @@ constructor(private readonly categoryDal: CategoryDal){}
         // 0. Si 'name' y 'tasks' están vacíos, retornar un error
         if (!updateCategoryDto.name && !updateCategoryDto.tasks) throw new HttpException('Nothing to update', HttpStatus.BAD_REQUEST);
         // 1. Si la categoría no existe, retornar un error
-        if(!this.categoryDal.findOneById(updateCategoryDto.id)) throw new HttpException('Category not found', HttpStatus.NOT_FOUND);
+        if(!await this.categoryDal.findOneById(updateCategoryDto.id)) throw new HttpException('Category not found', HttpStatus.NOT_FOUND);
         // 2. Si existe, actualizar la categoría y retornarla
         return this.categoryDal.updateCategory(updateCategoryDto);
     }
 
-    async deleteCategory(): Promise<any> {
-        return
+    async deleteCategory(id: number): Promise<ResponseCategoryDto> {
+        // 1. Si no existe el id de lacategoria, lanzar error
+        if (!await this.categoryDal.findOneById(id)) throw new HttpException('Category not found', HttpStatus.NOT_FOUND)
+        //2. enviar solicitud a dal para eliminar categoria con 'id
+        return this.categoryDal.deleteCategory(id)
     }
 }

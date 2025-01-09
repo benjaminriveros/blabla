@@ -38,7 +38,6 @@ export class CategoryDal {
         responseCategoryDto.name = found.name;
         // Mapear las tareas usando el constructor de ResponseTaskDto
         responseCategoryDto.tasks = found.tasks.map(task => new ResponseTaskDto(task));
-
         return responseCategoryDto;
     }
 
@@ -52,7 +51,7 @@ export class CategoryDal {
             }
         })
         //Si no se encuentra la categoría, retornar error not found
-        if (!found) throw new HttpException('Category not found', HttpStatus.NOT_FOUND);
+        if (!found) return null
         const responseCategoryDto = new ResponseCategoryDto();
         responseCategoryDto.id = found.id;
         responseCategoryDto.name = found.name;
@@ -103,7 +102,22 @@ export class CategoryDal {
         return responseCaegoryDto;
     }
 
-    async deleteCategory(): Promise<any>{
-        return
+    async deleteCategory(id: number): Promise<ResponseCategoryDto>{
+        const deleted = await this.prisma.category.delete({
+            where :{
+                id
+            },
+            include: {
+                tasks: true
+            }
+        })
+        // Mapear respuesta para retornar
+        const responseCategoryDto: ResponseCategoryDto = {
+            id: deleted.id,
+            name: deleted.name,
+            tasks: deleted.tasks.map(task => new ResponseTaskDto(task))
+        }
+
+        return responseCategoryDto
     }
 }

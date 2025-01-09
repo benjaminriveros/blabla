@@ -38,8 +38,8 @@ export class CategoryController {
         return this.categoryService.updateCategory(updateCategoryDto);
     }
 
-    @Delete()
-    async deleteCategory(): Promise<any> {
-        return
+    @Delete(':id')
+    async deleteCategory(@Param('id') id: string ): Promise<ResponseCategoryDto> {
+        return this.categoryService.deleteCategory(Number(id))
     }
 }
