@@ -55,5 +55,4 @@ export class TasksController {
         return await this.taskService.deleteTask(Number(id))
 
     }
-
 }

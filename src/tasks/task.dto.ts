@@ -62,37 +62,78 @@ export class TaskBaseDto {
   categoryId?: number;
 }
 export class TaskUpdateDto {
+  @ApiProperty({
+    description: 'The unique identifier of the task provided by URL, not body.',
+    example: 1,
+    required: false,
+  })
   @IsOptional()
   @IsNumber()
   id?: number;
 
+  @ApiProperty({
+    description: 'The title of the task.',
+    example: 'Updated Task Title',
+    required: false,
+  })
   @IsOptional()
   @IsString()
   title?: string;
 
-  @IsOptional()
+  @ApiProperty({
+    description: 'The day the task is scheduled to be performed.',
+    example: '05-12-2025',
+    required: true,
+  })
   @IsNotEmpty()
+  @IsString()
   day: string;
 
+  @ApiProperty({
+    description: 'The day the task should be finished. If not provided, the task does not have a defined end date.',
+    example: '05-12-2025',
+    required: false,
+  })
   @IsOptional()
   @IsString()
   dayFinish?: string;
 
+  @ApiProperty({
+    description: 'The time at which the task is scheduled.',
+    example: '10:00',
+    required: false,
+  })
   @IsOptional()
   @IsString()
   hour?: string;
 
+  @ApiProperty({
+    description: 'A description of the task. Provides more details about the task.',
+    example: 'This is an updated description for the task.',
+    required: false,
+  })
   @IsOptional()
   @IsString()
   description?: string;
 
+  @ApiProperty({
+    description: 'Whether the task is completed or not.',
+    example: true,
+    required: false,
+  })
   @IsOptional()
   @IsBoolean()
   isCompleted?: boolean;
 
+  @ApiProperty({
+    description: 'The ID of the (existing) category to associate with the task.',
+    example: 2,
+    required: false,
+  })
   @IsOptional()
   @IsInt()
   categoryId?: number;
+
 }
 export class TaskParamDeleteDto {
   @ApiProperty({
