@@ -11,7 +11,9 @@ export class UtilsService {
     }    
     
     validateId(id: string): boolean {
-        return this.idPattern.test(id)
+        if (!this.idPattern.test(id)) return false
+        //validar digito verificador
+        return true
     }
 
     formateDate(date: string): Date {

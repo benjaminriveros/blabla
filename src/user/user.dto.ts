@@ -60,10 +60,10 @@ export class CreateUserDto {
 export class ResponseUserTaskDto {
 
     @ApiProperty({
-        description: 'The user\'s identification number (RUN), without dots and with a hyphen',
-        example: '12345678-2'
+        description: 'Id of the relation user-task',
+        example: 1,
     })
-    id: string;
+    id: number;
 
     @ApiProperty({
         description: 'ID of the task associated with this user',
@@ -90,7 +90,7 @@ export class ResponseUserTaskDto {
       })
     updatedAt: Date;
 }
-export class ResponseUserdto {
+export class ResponseUserDto {
 
     @ApiProperty({
         description: 'The user\'s identification number (RUN), without dots and with a hyphen',
