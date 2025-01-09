@@ -1,6 +1,6 @@
 import { Injectable, HttpException, HttpStatus } from "@nestjs/common";
 import { CategoryDal } from "./category.dal";
-import { CreateCategoryDto, FindAllQueryDto, ResponseAllCategoryDto, ResponseCategoryDto, SearchNameOrIdCategoryDto } from "./category.dto";
+import { CreateCategoryDto, FindAllQueryDto, ResponseAllCategoryDto, ResponseCategoryDto, SearchNameOrIdCategoryDto, UpdateCategoryDto } from "./category.dto";
 
 @Injectable()
 export class CategoryFacade {
@@ -39,8 +39,13 @@ constructor(private readonly categoryDal: CategoryDal){}
         return this.categoryDal.findAll(findAllQueryDto);
     }
 
-    async updateCategory(): Promise<any> {
-        return
+    async updateCategory(updateCategoryDto: UpdateCategoryDto): Promise<ResponseCategoryDto> {
+        // 0. Si 'name' y 'tasks' están vacíos, retornar un error
+        if (!updateCategoryDto.name && !updateCategoryDto.tasks) throw new HttpException('Nothing to update', HttpStatus.BAD_REQUEST);
+        // 1. Si la categoría no existe, retornar un error
+        if(!this.categoryDal.findOneById(updateCategoryDto.id)) throw new HttpException('Category not found', HttpStatus.NOT_FOUND);
+        // 2. Si existe, actualizar la categoría y retornarla
+        return this.categoryDal.updateCategory(updateCategoryDto);
     }
 
     async deleteCategory(): Promise<any> {

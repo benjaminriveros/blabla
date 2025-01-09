@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
-import { CreateCategoryDto, FindAllQueryDto, ResponseAllCategoryDto, ResponseCategoryDto } from "./category.dto";
+import { CreateCategoryDto, FindAllQueryDto, ResponseAllCategoryDto, ResponseCategoryDto, UpdateCategoryDto } from "./category.dto";
 import { ResponseTaskDto } from "src/tasks/task.dto";
 
 @Injectable()
@@ -73,8 +73,26 @@ export class CategoryDal {
         return found.map(found => new ResponseAllCategoryDto(found));
     }
 
-    async updateCategory(): Promise<any>{
-        return
+    async updateCategory(updateCategoryDto: UpdateCategoryDto): Promise<ResponseCategoryDto>{
+        const data: any = {};
+        if(updateCategoryDto.name) data.name = updateCategoryDto.name;
+        if(updateCategoryDto.tasks) data.tasks = updateCategoryDto.tasks;
+        const updated = await this.prisma.category.update({
+            where:{
+                id: updateCategoryDto.id
+            },
+            data,
+            include: { 
+                tasks: true
+            }
+        })
+        // Mapear respuesta final para retornarla
+        const responseCaegoryDto: ResponseCategoryDto ={
+            id: updated.id,
+            name: updated.name,
+            tasks: updated.tasks.map(task => new ResponseTaskDto(task))
+        }
+        return responseCaegoryDto;
     }
 
     async deleteCategory(): Promise<any>{

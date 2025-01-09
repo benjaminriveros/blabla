@@ -1,6 +1,6 @@
-import { Body, Controller, Post, Get, Put, Delete, Query } from '@nestjs/common';
+import { Body, Controller, Post, Get, Put, Delete, Query, Param } from '@nestjs/common';
 import { CategoryService } from './category.service';
-import { ResponseCategoryDto, CreateCategoryDto, SearchNameOrIdCategoryDto, FindAllQueryDto } from './category.dto';
+import { ResponseCategoryDto, CreateCategoryDto, SearchNameOrIdCategoryDto, FindAllQueryDto, UpdateCategoryDto } from './category.dto';
 
 @Controller('category')
 export class CategoryController {
@@ -29,10 +29,15 @@ export class CategoryController {
       return this.categoryService.getAllCategories(findAllQueryDto);
     }
 
-    @Put()
-    async updateCategory(): Promise<any> {
-        return
+    @Put(':id')
+    async updateCategory(
+        @Body() updateCategoryDto: UpdateCategoryDto,
+        @Param('id') id: string
+    ): Promise<ResponseCategoryDto> {
+        updateCategoryDto.id = Number(id);
+        return this.categoryService.updateCategory(updateCategoryDto);
     }
+
     @Delete()
     async deleteCategory(): Promise<any> {
         return

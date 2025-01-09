@@ -17,6 +17,7 @@ export class ResponseCategoryDto{
     name: string;
 
     @IsArray()
+    @IsNotEmpty()
     tasks: ResponseTaskDto[];
 }
 
@@ -39,20 +40,6 @@ export class ResponseAllCategoryDto {
     @IsArray()
     tasks: ResponseTaskDto[];
 }
-/*export class SearchNameOrIdCategoryDto {
-
-    @IsOptional()
-    @IsNumber()
-    id: number;
-
-    @IsOptional()
-    @IsString()
-    name: string;
-
-    @ValidateIf((o) => !o.id && !o.name)
-    @IsNotEmpty({ message: 'At least one of id or name must be provided' })
-    atLeastOne: boolean;
-}*/
 
 export class SearchNameOrIdCategoryDto {
   @ValidateIf((o) => !o.name)
@@ -78,7 +65,7 @@ export class FindAllQueryDto {
 
 export class UpdateCategoryDto {
     @IsNumber()
-    @IsNotEmpty()
+    @IsOptional()
     id: number;
 
     @IsString()

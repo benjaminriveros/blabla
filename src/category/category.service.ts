@@ -16,8 +16,8 @@ export class CategoryService {
     async getAllCategories(findAllQueryDto: FindAllQueryDto): Promise<ResponseAllCategoryDto[]> {
         return this.categoryFacade.getAllCategories(findAllQueryDto);
     }
-    async updateCategory(): Promise<any> {
-        return
+    async updateCategory(responseCategoryDto: ResponseCategoryDto): Promise<ResponseCategoryDto> {
+        return this.categoryFacade.updateCategory(responseCategoryDto);
     }
     async deleteCategory(): Promise<any> {
         return
