@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsString, IsOptional, IsEnum, IsDate } from "class-validator";
+import { IsNotEmpty, IsString, IsOptional, IsEnum, IsDate, IsInt, Min, Max } from "class-validator";
 import { UserStatus } from "../enum/UserStatus.js"
 
 export class CreateUserDto {
@@ -149,3 +149,16 @@ export class ResponseUserDto {
     })
     task: ResponseUserTaskDto[];
 }
+export class QueryFindByName {
+    @IsString()
+    @IsNotEmpty()
+    name: string;
+  
+    @IsString()
+    @IsNotEmpty()
+    page: string = "1"; // Valor por defecto si no se pasa en la URL
+  
+    @IsString()
+    @IsNotEmpty()
+    limit: string = "5"; // Valor por defecto si no se pasa en la URL
+  }

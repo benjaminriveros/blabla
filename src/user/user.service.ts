@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { UserFacade } from './user.facade';
-import { CreateUserDto, ResponseUserDto } from './user.dto';
+import { CreateUserDto, QueryFindByName, ResponseUserDto } from './user.dto';
 
 @Injectable()
 export class UserService {
@@ -12,5 +12,9 @@ export class UserService {
 
     async findUserById(id:string): Promise<ResponseUserDto> {
         return this.userFacade.finduserById(id)
+    }
+
+    async findUserByname(queryFindByName: QueryFindByName): Promise<ResponseUserDto[]> {
+        return this.userFacade.findUserByName(queryFindByName)
     }
 }

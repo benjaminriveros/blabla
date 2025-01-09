@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
-import { CreateUserDto, ResponseUserDto, ResponseUserTaskDto } from "./user.dto";
+import { CreateUserDto, QueryFindByName, ResponseUserDto, ResponseUserTaskDto } from "./user.dto";
 import { UserStatus } from "src/enum/UserStatus";
 import { map } from "rxjs";
 
@@ -55,5 +55,24 @@ export class UserDal{
           })
         if(!exists) return null
         return this.mapToResponseUserDto(exists)
+    }
+    async findUserByName(queryFindByName: QueryFindByName): Promise<ResponseUserDto[]>{
+        const exists = await this.prisma.user.findMany({
+        where:{
+                name: {
+                    contains: queryFindByName.name,
+                    mode: 'insensitive'
+                }
+            },
+        include: {
+            task: true
+            },
+        skip: (Number(queryFindByName.page) - 1) * Number(queryFindByName.limit),
+        take: Number(queryFindByName.limit),
+        })
+        if(exists.length == 0) return null
+        const listUsers: ResponseUserDto[] = exists.map(user => this.mapToResponseUserDto(user))
+        console.log(listUsers)
+        return listUsers
     }
 }

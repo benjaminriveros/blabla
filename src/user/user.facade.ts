@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { UserDal } from "./user.dal";
-import { CreateUserDto } from "./user.dto";
+import { CreateUserDto, QueryFindByName } from "./user.dto";
 import { UtilsService } from "src/utils/utils.service";
 import { ResponseUserDto } from "./user.dto.js"
 
@@ -22,5 +22,10 @@ export class UserFacade {
         return exists
     }
 
+    async findUserByName(queryFindByName: QueryFindByName): Promise<ResponseUserDto[]> {
+        const exists = await this.userDal.findUserByName(queryFindByName)
+        if(!exists) throw new HttpException('Name does not exist', HttpStatus.NOT_FOUND)
+        return exists
+    }
 
 }

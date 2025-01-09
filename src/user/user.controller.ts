@@ -1,6 +1,6 @@
-import { Param, Body, Controller, Get, Post, Put, Delete } from '@nestjs/common';
+import { Param, Body, Query, Controller, Get, Post, Put, Delete } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto, ResponseUserDto } from './user.dto';
+import { CreateUserDto, QueryFindByName, ResponseUserDto } from './user.dto';
 import { UtilsService } from 'src/utils/utils.service';
 
 @Controller('user')
@@ -17,4 +17,12 @@ export class UserController {
     async findUserById(@Param('id') id: string): Promise<ResponseUserDto>{
         return this.userService.findUserById(id)
     }
+
+    @Get()
+    async getUsersByName(
+        @Query() query: QueryFindByName,
+    ): Promise <ResponseUserDto[]> {
+        return this.userService.findUserByname(query)
+    }
+
 }
