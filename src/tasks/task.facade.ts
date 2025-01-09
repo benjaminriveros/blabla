@@ -3,10 +3,14 @@ import { TaskDal } from "./task.dal";
 import { CategoryDal } from "../category/category.dal.js"; // ¿Es esto legal? ajsjajs
 import { CreateTaskDto, TaskQueryFindAllDto, ResponseTaskDto, TaskFindOneDto, TaskUpdateDto } from "./task.dto"
 import { NotFoundException, BadRequestException } from "@nestjs/common";
+import { UtilsService } from "src/utils/utils.service";
 
 @Injectable()
 export class TaskFacade {
-    constructor(private readonly taskDal: TaskDal, private readonly categoryDal: CategoryDal){}
+    constructor(private readonly taskDal: TaskDal,
+        private readonly categoryDal: CategoryDal,
+        private readonly utilsService: UtilsService
+    ) {}
 
     async createTask(createTaskDto: CreateTaskDto){
         return this.taskDal.createTask(createTaskDto);
@@ -30,9 +34,11 @@ export class TaskFacade {
         // 2. Verificar si la fecha de la tarea es del pasado y si existe la tarea
         if(!task) throw new NotFoundException('Task not found');
 
-        const [day, month, year] = task.day.split('-');
-        const formattedDay =  `${year}-${month}-${day}`;
-        const taskDate = new Date(formattedDay);
+        //const [day, month, year] = task.day.split('-');
+        //const formattedDay =  `${year}-${month}-${day}`;
+        //const taskDate = new Date(formattedDay);
+
+        const taskDate = this.utilsService.formateDate(task.day)
         //2.2 si hay Id de categoría a asignar, verifiacr que ese Id exista.
         if(taskUpdateDto.categoryId && ! await this.categoryDal.findOneById(taskUpdateDto.categoryId))
             throw new HttpException('Category not found', HttpStatus.NOT_FOUND)

@@ -2,7 +2,6 @@ import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreateCategoryDto, FindAllQueryDto, ResponseAllCategoryDto, ResponseCategoryDto, UpdateCategoryDto } from "./category.dto";
 import { ResponseTaskDto } from "src/tasks/task.dto";
-import { connect } from "http2";
 
 @Injectable()
 export class CategoryDal {
