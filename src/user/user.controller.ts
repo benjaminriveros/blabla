@@ -1,37 +1,56 @@
-import { Param, Body, Query, Controller, Get, Post, Put, Delete } from '@nestjs/common';
-import { UserService } from './user.service';
-import { CreateUserDto, QueryFindByName, QueryUpdateUserDto, ResponseUserDto } from './user.dto';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Put, Query } from '@nestjs/common';
+import { TaskResponseDto } from 'src/tasks/task.dto';
+import { UserTaskFacade } from 'src/user-task/user-task.facade';
 import { UtilsService } from 'src/utils/utils.service';
+import { CreateUserDto, QueryFindByName, QueryUpdateUserDto, UserResponseDto } from './user.dto';
+import { UserFacade } from './user.facade';
 
 @Controller('user')
 export class UserController {
-    constructor(private readonly userService: UserService, private readonly utilsService: UtilsService) {}
+    constructor(
+        private readonly userFacade: UserFacade,
+        private readonly utilsService: UtilsService,
+        private readonly userTaskFacade: UserTaskFacade
+    ) { }
 
     @Post()
-    async createUser(@Body() createUserDto: CreateUserDto): Promise<ResponseUserDto>{
-        createUserDto.birthDate = this.utilsService.formateDate(createUserDto.birthDate)
-        return this.userService.createUser(createUserDto)
+    async createUser(@Body() createUserDto: CreateUserDto): Promise<UserResponseDto> {
+        return this.userFacade.createUser(createUserDto)
     }
 
     @Get(':id')
-    async findUserById(@Param('id') id: string): Promise<ResponseUserDto>{
-        return this.userService.findUserById(id)
+    async findUserById(@Param('id', ParseIntPipe) id: number): Promise<UserResponseDto> {
+        return this.userFacade.findUserById(id)
     }
 
     @Get()
     async getUsersByName(
         @Query() query: QueryFindByName,
-    ): Promise <ResponseUserDto[]> {
-        return this.userService.findUserByname(query)
+    ): Promise<UserResponseDto[]> {
+        return this.userFacade.findUserByName(query)
     }
 
     @Put(':id')
     async updateUser(
-        @Param('id') id: string,
+        @Param('id', ParseIntPipe) id: number,
         @Body() queryUpdateUserDto: QueryUpdateUserDto
-    ): Promise <any> {
-        if(queryUpdateUserDto.birthDate)
-            queryUpdateUserDto.birthDate = this.utilsService.formateDate(queryUpdateUserDto.birthDate)
-        return this.userService.updateUser(id, queryUpdateUserDto)
+    ): Promise<UserResponseDto> {
+        return this.userFacade.updateUser(id, queryUpdateUserDto)
+    }
+
+    @Post(':id/task')
+    public async setRelation(
+        @Param('id', ParseIntPipe) userId: number,
+        @Body() body: { taskId: number }
+    ): Promise<string> {
+        const nCreated = await this.userTaskFacade.createTaskUser([userId], body.taskId)
+        return `${nCreated} relations have been created`
+    }
+
+    @Get(':id/task')
+    public async getTasks(
+        @Param('id', ParseIntPipe) userId: number,
+    ): Promise<TaskResponseDto[]> {
+        return this.userFacade.getTasks(userId)
     }
 }

@@ -13,46 +13,46 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-  id            String         @id
-  name          String
-  surName       String?
-  birthDate     DateTime
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    
-  status        UserStatus  @default(ACTIVE)
-  userTask      UserTask[]
+  id        Int        @id @default(autoincrement())
+  name      String
+  surName   String?
+  birthDate DateTime   //TODO
+  createdAt DateTime   @default(now())
+  updatedAt DateTime
+  status    UserStatus @default(ACTIVE)
+  userTask  UserTask[]
 }
 
 model UserTask {
-  id            Int       @id @default(autoincrement())
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime 
-  taskId        Int
-  userId        String
-  task          Tasks     @relation(fields: [taskId], references: [id])
-  user          User      @relation(fields: [userId], references: [id])
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  taskId    Int
+  userId    Int
+  task      Tasks    @relation(fields: [taskId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 }
+
 model Tasks {
-  id            Int       @id @default(autoincrement())
-  title         String
-  description   String
-  day           String
-  hour          String
-  dayFinish     String?
-  isCompleted   Boolean   @default(false)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  userTask      UserTask[]
-  categoryId    Int?      // Clave forenea de la relcion con categoria
-  cetegory      Category? @relation(fields: [categoryId], references: [id]) //Relacion con category
+  id          Int        @id @default(autoincrement())
+  title       String
+  description String
+  day         DateTime
+  hour        String
+  dayFinish   DateTime?
+  isCompleted Boolean    @default(false)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  userTask    UserTask[]
+  categoryId  Int? // Clave forenea de la relcion con categoria
+  cetegory    Category?  @relation(fields: [categoryId], references: [id]) //Relacion con category
 }
 
 model Category {
-  id              Int       @id @default(autoincrement())
-  name            String
-  tasks           Tasks[]
+  id    Int     @id @default(autoincrement())
+  name  String
+  tasks Tasks[]
 }
 
 enum UserStatus {

@@ -1,98 +1,74 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
-import { CreateUserDto, QueryFindByName, QueryUpdateUserDto, ResponseUserDto, ResponseUserTaskDto } from "./user.dto";
-import { UserStatus } from "src/enum/UserStatus";
-import { map } from "rxjs";
+import { TaskResponseDto } from "src/tasks/task.dto";
+import { CreateUserDto, QueryFindByName, QueryUpdateUserDto, UserResponseDto } from "./user.dto";
 
 @Injectable()
-export class UserDal{
-    constructor(private readonly prisma: PrismaService){}
+export class UserDal {
+    constructor(private readonly prisma: PrismaService) { }
 
-    private mapToResponseUserDto(exists: any): ResponseUserDto {
-        return {
-          id: exists.id,
-          name: exists.name,
-          birthDate: exists.birthDate,
-          surName: exists.surName || null,
-          status: exists.status as UserStatus,
-          createdAt: exists.createdAt,
-          updatedAt: exists.updatedAt,
-          task: exists.task
-            ? exists.task.map((userTask: any): ResponseUserTaskDto => {
-                return {
-                  id: userTask.id,
-                  taskId: userTask.taskId,
-                  userId: userTask.userId,
-                  createdAt: userTask.createdAt,
-                  updatedAt: userTask.updatedAt,
-                  taskDetails: userTask.task
-                } as ResponseUserTaskDto;
-              })
-            : [] // arreglo vacío si no hay tareas
-        } as ResponseUserDto;
+    async createUser(createUserDto: CreateUserDto): Promise<UserResponseDto> {
+        const created = await this.prisma.user.create({
+            data: createUserDto
+        })
+        return new UserResponseDto(created)
     }
 
-    async createUser(createUserDto: CreateUserDto): Promise <ResponseUserDto> {
-        const created = await this.prisma.user.create({
-            data: createUserDto,
-            include: {
-                task: true
+    async findUserById(id: number): Promise<UserResponseDto> {
+        const exists = await this.prisma.user.findUnique({
+            where: { id }
+        })
+        return new UserResponseDto(exists)
+    }
+
+    async countUserById(ids: number[]): Promise<number> {
+        const count = await this.prisma.user.count({
+            where: {
+                id: {
+                    in: ids
+                }
             }
         })
-        return this.mapToResponseUserDto(created)
+        return count
     }
 
-    async findUserById(id: string): Promise <ResponseUserDto> {
-        const exists = await this.prisma.user.findUnique({
-            where: { id },
-            include: {
-              task: {
-                include: {
-                  task: true
-                },
-              },
-            },
-          })
-        if(!exists) return null
-        return this.mapToResponseUserDto(exists)
-    }
-    async findUserByName(queryFindByName: QueryFindByName): Promise<ResponseUserDto[]>{
-        const exists = await this.prisma.user.findMany({
-        where:{
-                name: {
+    async findUserByName(queryFindByName: QueryFindByName): Promise<UserResponseDto[]> {
+        const found = await this.prisma.user.findMany({
+            where: {
+            name: {
                     contains: queryFindByName.name,
                     mode: 'insensitive'
                 }
             },
-        include: {
-            task: true
-            },
-        skip: (Number(queryFindByName.page) - 1) * Number(queryFindByName.limit),
-        take: Number(queryFindByName.limit),
+            skip: (queryFindByName.page - 1) * queryFindByName.limit,
+            take: queryFindByName.limit,
         })
-        if(exists.length === 0) return null
-        const listUsers: ResponseUserDto[] = exists.map(user => this.mapToResponseUserDto(user))
-        return listUsers
+        const result = found.map(user => new UserResponseDto(user))
+        return result
     }
 
-    async updateUser(id:string, queryUpdateUserDto: QueryUpdateUserDto): Promise<any>{ 
-        const data: any = []
-        if(queryUpdateUserDto.name) data.name = queryUpdateUserDto.name
-        if(queryUpdateUserDto.surName) data.surName = queryUpdateUserDto.surName
-        if(queryUpdateUserDto.birthDate) data.surName = queryUpdateUserDto.birthDate
-        if(queryUpdateUserDto.status) data.surName = queryUpdateUserDto.status
-        if(queryUpdateUserDto.tasks.length) {
-            data.tasks = {
-                set: queryUpdateUserDto.tasks.map(task => ({userId: task}))
-            }
-        }
-        return console.log(data)
+    async updateUser(id: number, queryUpdateUserDto: QueryUpdateUserDto): Promise<UserResponseDto> {
         const updated = await this.prisma.user.update({
             where: {
                 id
             },
-            data
+            data: queryUpdateUserDto
         })
-        return this.mapToResponseUserDto(updated)
+        return new UserResponseDto(updated)
+    }
+
+    async getTasks(id: number): Promise<TaskResponseDto[]> {
+        const found = await this.prisma.user.findFirst({
+            where: { id },
+            include: {
+                userTask: {
+                    include: {
+                        task: true
+                    }
+                }
+            }
+        })
+        const tasks = found.userTask.map(userTask => userTask.task)
+        return tasks.map(task => new TaskResponseDto(task))
     }
 }

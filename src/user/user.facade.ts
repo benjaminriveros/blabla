@@ -1,39 +1,51 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import { UserDal } from "./user.dal";
-import { CreateUserDto, QueryFindByName, QueryUpdateUserDto } from "./user.dto";
+import { CreateUserDto, QueryFindByName, QueryUpdateUserDto, UserResponseDto } from "./user.dto";
 import { UtilsService } from "src/utils/utils.service";
-import { ResponseUserDto } from "./user.dto.js"
+import { TaskResponseDto } from "src/tasks/task.dto";
 
 @Injectable()
 export class UserFacade {
-    constructor(private readonly userDal: UserDal, private readonly utilsService: UtilsService){}
+    constructor(private readonly userDal: UserDal, private readonly utilsService: UtilsService) { }
 
-    async createUser(createUserDto: CreateUserDto): Promise <any> {
-        createUserDto.updatedAt = new Date()
-        if(!this.utilsService.validateId(createUserDto.id)) throw new HttpException('Invalid Id (RUN)', HttpStatus.BAD_REQUEST)
-        if(await this.userDal.findUserById(createUserDto.id)) throw new HttpException('Id (RUN) already exists', HttpStatus.BAD_REQUEST)
-        return this.userDal.createUser(createUserDto) 
-    }
-
-    async finduserById(id: string): Promise<ResponseUserDto> {
-        if(!this.utilsService.validateId(id)) throw new HttpException('Invalid Id (RUN)', HttpStatus.BAD_REQUEST)
+    private async validateExistsId(id: number): Promise<UserResponseDto> {
+        
         const exists = await this.userDal.findUserById(id)
-        if(!exists) throw new HttpException('Id (RUN) does not exist', HttpStatus.NOT_FOUND)
+        if (!exists) throw new HttpException('Id does not exist', HttpStatus.NOT_FOUND)
         return exists
     }
 
-    async findUserByName(queryFindByName: QueryFindByName): Promise<ResponseUserDto[]> {
+    public async createUser(createUserDto: CreateUserDto): Promise<UserResponseDto> {
+
+        const foundUser = await this.userDal.findUserById(createUserDto.id)
+        if (foundUser) throw new HttpException('Id already exist', HttpStatus.CONFLICT)
+
+        return this.userDal.createUser(createUserDto)
+    }
+
+    public async findUserById(id: number): Promise<UserResponseDto> {
+        return this.validateExistsId(id)
+    }
+
+    public async findUserByName(queryFindByName: QueryFindByName): Promise<UserResponseDto[]> {
+
         const exists = await this.userDal.findUserByName(queryFindByName)
-        if(!exists) throw new HttpException('Name does not exist', HttpStatus.NOT_FOUND)
+        if (!exists) throw new HttpException('Name does not exist', HttpStatus.NOT_FOUND)
         return exists
     }
 
-    async updateUser(id:string, queryUpdateUserDto: QueryUpdateUserDto):Promise<any>{
-        if(!this.utilsService.validateId(id)) throw new HttpException('Invalid Id (RUN)', HttpStatus.BAD_REQUEST)
-        const exists = await this.userDal.findUserById(id)
-        if(!exists) throw new HttpException('Id (RUN) does not exist', HttpStatus.NOT_FOUND)
-        //buscar que existan las tasks que quiere relacionar, si existen, traer el id de TaskUser que relacionará
+    public async updateUser(id: number, queryUpdateUserDto: QueryUpdateUserDto): Promise<any> {
+
+        this.validateExistsId(id)
+
         return this.userDal.updateUser(id, queryUpdateUserDto)
     }
 
+    async getTasks(id: number): Promise<TaskResponseDto[]> {
+
+        this.validateExistsId(id)
+
+        return this.userDal.getTasks(id)
+
+    }
 }
